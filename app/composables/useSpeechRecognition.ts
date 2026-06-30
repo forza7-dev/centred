@@ -2,33 +2,49 @@ export function useSpeechRecognition() {
   const isSupported = ref(false)
   const listeningId = ref<string | null>(null)
 
-  let recognition: any = null
+  let SR: any = null
+  let active: any = null
 
   onMounted(() => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     isSupported.value = !!SR
-    if (!SR) return
-    recognition = new SR()
-    recognition.continuous = false
-    recognition.interimResults = false
-    recognition.lang = 'en-GB'
   })
 
   function listen(id: string, onResult: (text: string) => void) {
-    if (!recognition) return
+    if (!SR) return
+
     if (listeningId.value === id) {
-      recognition.stop()
+      active?.stop()
+      active = null
       listeningId.value = null
       return
     }
-    if (listeningId.value) recognition.stop()
+
+    active?.stop()
+    active = null
+
+    const recognition = new SR()
+    recognition.continuous = false
+    recognition.interimResults = false
+    recognition.lang = 'en-GB'
+
     listeningId.value = id
+    active = recognition
+
     recognition.onresult = (e: any) => {
       onResult(e.results[0][0].transcript.trim())
       listeningId.value = null
+      active = null
     }
-    recognition.onerror = () => { listeningId.value = null }
-    recognition.onend = () => { listeningId.value = null }
+    recognition.onerror = () => {
+      listeningId.value = null
+      active = null
+    }
+    recognition.onend = () => {
+      listeningId.value = null
+      active = null
+    }
+
     recognition.start()
   }
 
