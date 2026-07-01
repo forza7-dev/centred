@@ -50,29 +50,22 @@ const isWhatMatters = computed(() => tool.value?.id === 'what-matters')
 const isWhatsWorking = computed(() => tool.value?.id === 'whats-working')
 const isHowICommunicate = computed(() => tool.value?.id === 'how-i-communicate')
 const isMyPerfectWeek = computed(() => tool.value?.id === 'my-perfect-week')
+const isMyDirection = computed(() => tool.value?.id === 'my-direction')
 
-const myPeopleRingDefs = [
-  { id: 'closest', label: 'Closest', diameter: 30.8, midRadius: 10.2, opacity: 0.7, fillOpacity: 0.35 },
-  { id: 'important', label: 'Important', diameter: 53.8, midRadius: 21.2, opacity: 0.5, fillOpacity: 0.2 },
-  { id: 'wider', label: 'Wider circle', diameter: 75, midRadius: 32.2, opacity: 0.3, fillOpacity: 0.1 },
-  { id: 'paid', label: 'Paid support', diameter: 94.2, midRadius: 42.3, opacity: 0.15, fillOpacity: 0.05 },
+const myPeopleQuadrants = [
+  { fieldId: 'closest', label: 'Closest to me', colour: '#CF8872' },
+  { fieldId: 'important', label: 'Important to me', colour: '#D99A5B' },
+  { fieldId: 'wider', label: 'Other people in my life', colour: '#6B9E7D' },
+  { fieldId: 'paid', label: 'Paid support', colour: '#9B8AB8' },
 ]
 
-const myPeopleRingData = computed(() => {
-  if (!isMyPeople.value) return []
-  return myPeopleRingDefs.map(ring => {
-    const items = getListData(ring.id)
-    const people = items.map((item, i) => {
-      const angle = items.length > 0 ? 2 * Math.PI * i / items.length : 0
-      return {
-        name: item || null,
-        x: 50 + ring.midRadius * Math.cos(angle),
-        y: 50 + ring.midRadius * Math.sin(angle),
-      }
-    })
-    return { ...ring, people }
-  })
-})
+const myDirectionColumns = [
+  { fieldId: 'now', question: 'What are things like now?' },
+  { fieldId: 'who', question: 'Who are the people and services in my life?' },
+  { fieldId: 'working', question: 'What\'s working and not working?' },
+  { fieldId: 'first-steps', question: 'What should we do first?' },
+  { fieldId: 'next-month', question: 'What can we do in the next month?' },
+]
 
 onMounted(() => {
   const entry = getEntry(entryId)
@@ -145,7 +138,7 @@ async function exportPdf() {
       filename: `${tool.value.name} - ${name}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: (isMyPeople.value || isHowICommunicate.value || isMyPerfectWeek.value) ? 'landscape' : 'portrait' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: (isMyPeople.value || isHowICommunicate.value || isMyPerfectWeek.value || isMyDirection.value) ? 'landscape' : 'portrait' },
     })
     deleteEntry(entryId)
     showGdprNotice.value = true
@@ -167,7 +160,7 @@ function goBack() {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+  <div class="mx-auto px-4 sm:px-6 py-8 sm:py-12" :class="isMyDirection ? 'max-w-6xl' : 'max-w-3xl'">
     <!-- GDPR notice after PDF export -->
     <div v-if="showGdprNotice" class="text-center py-16">
       <div class="w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-6">
@@ -368,73 +361,100 @@ function goBack() {
           </div>
         </div>
 
-        <!-- ==================== MY PEOPLE: Concentric circle diagram ==================== -->
+        <!-- ==================== MY PEOPLE: Quadrant grid ==================== -->
         <div v-else-if="isMyPeople" class="px-6 py-4">
-          <div class="relative mx-auto" style="width: 100%; max-width: 520px; aspect-ratio: 1;">
-
-            <!-- Coloured ring fills: largest first so inner rings paint over outer -->
-            <template v-for="ring in [...myPeopleRingData].reverse()" :key="'fill-' + ring.id">
-              <div class="absolute rounded-full"
-                   :style="{
-                     width: ring.diameter + '%',
-                     height: ring.diameter + '%',
-                     left: (100 - ring.diameter) / 2 + '%',
-                     top: (100 - ring.diameter) / 2 + '%',
-                     backgroundColor: accentWithOpacity(ring.fillOpacity),
-                     border: '1.5px solid ' + accentWithOpacity(ring.opacity),
-                   }" />
-            </template>
-
-            <!-- Ring labels -->
-            <div v-for="ring in myPeopleRingData" :key="'label-' + ring.id"
-                 class="absolute text-center pointer-events-none"
-                 :style="{
-                   left: '50%',
-                   top: (50 - ring.midRadius) + '%',
-                   transform: 'translate(-50%, -50%)',
-                   fontSize: '8px',
-                   fontWeight: '700',
-                   textTransform: 'uppercase',
-                   letterSpacing: '0.06em',
-                   color: accentWithOpacity(0.5),
-                   whiteSpace: 'nowrap',
-                 }">
-              {{ ring.label }}
+          <div class="relative mx-auto grid grid-cols-2 grid-rows-2 gap-3" style="max-width: 640px;">
+            <div v-for="quadrant in myPeopleQuadrants" :key="quadrant.fieldId"
+                 class="rounded-xl p-4"
+                 :style="{ border: '2px solid ' + quadrant.colour, backgroundColor: quadrant.colour + '0F', minHeight: '170px' }">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" :style="{ color: quadrant.colour }">
+                {{ quadrant.label }}
+              </h3>
+              <ul v-if="getListWithPhotoData(quadrant.fieldId).length > 0" class="space-y-2">
+                <li v-for="(person, i) in getListWithPhotoData(quadrant.fieldId)" :key="i" class="flex items-center gap-2">
+                  <div v-if="person.photo" class="w-8 h-8 rounded-full overflow-hidden shrink-0 border" :style="{ borderColor: quadrant.colour }">
+                    <img :src="person.photo" class="w-full h-full object-cover" alt="" />
+                  </div>
+                  <div v-else class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-semibold"
+                       :style="{ backgroundColor: quadrant.colour }">
+                    {{ (person.text.charAt(0) || '?').toUpperCase() }}
+                  </div>
+                  <span class="text-navy/80 text-sm">{{ person.text }}</span>
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
             </div>
 
-            <!-- Centre: person name -->
-            <div class="absolute flex items-center justify-center rounded-full text-white font-bold text-center"
+            <!-- Centre: Me -->
+            <div class="absolute flex items-center justify-center rounded-full bg-white font-bold overflow-hidden"
+                 style="left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10; width: 56px; height: 56px; border: 2.5px solid #72B9CF; color: #72B9CF; font-size: 13px;">
+              <img v-if="getTextData('me-photo')" :src="getTextData('me-photo')" class="w-full h-full object-cover" alt="Me" />
+              <span v-else>Me</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== MY DIRECTION: PATH diagram ==================== -->
+        <div v-else-if="isMyDirection" class="px-4 sm:px-6 py-6">
+          <div class="grid items-stretch" style="min-height: 340px; grid-template-columns: repeat(6, minmax(0, 1fr)) 84px 84px; gap: 0;">
+
+            <!-- 5-column table -->
+            <div v-for="(col, i) in myDirectionColumns" :key="col.fieldId"
+                 class="flex flex-col px-2 py-3 min-w-0"
                  :style="{
-                   left: '50%', top: '50%',
-                   transform: 'translate(-50%, -50%)',
-                   zIndex: 10,
-                   width: '52px', height: '52px',
-                   backgroundColor: currentAccent,
-                   border: '2px solid white',
-                   fontSize: '9px',
-                   lineHeight: '1.2',
-                   padding: '4px',
+                   borderTop: '2px solid ' + currentAccent, borderBottom: '2px solid ' + currentAccent,
+                   borderLeft: i === 0 ? '2px solid ' + currentAccent : '1.5px solid ' + accentWithOpacity(0.3),
+                   borderRadius: i === 0 ? '12px 0 0 12px' : '0',
                  }">
-              {{ getTextData('name') || 'You' }}
+              <p class="text-[11px] font-semibold text-navy text-center mb-2 leading-snug">{{ col.question }}</p>
+              <ul v-if="getListData(col.fieldId).length > 0" class="space-y-1 flex-1">
+                <li v-for="(item, idx) in getListData(col.fieldId)" :key="idx" class="text-[11px] text-navy/80 flex items-start gap-1">
+                  <span class="w-1 h-1 rounded-full mt-1 shrink-0" :style="{ backgroundColor: currentAccent }" />
+                  <span class="break-words">{{ item }}</span>
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-[11px] text-center">Not filled in</p>
             </div>
 
-            <!-- People: initial avatar + name label -->
-            <template v-for="ring in myPeopleRingData" :key="'people-' + ring.id">
-              <div v-for="(person, pi) in ring.people" :key="ring.id + '-' + pi"
-                   class="absolute flex flex-col items-center"
-                   :style="{
-                     left: person.x + '%',
-                     top: person.y + '%',
-                     transform: 'translate(-50%, -50%)',
-                     zIndex: 10,
-                   }">
-                <span v-if="person.name"
-                      class="text-center whitespace-nowrap"
-                      :style="{ fontSize: '9px', color: 'rgba(22,31,56,0.75)', marginTop: '2px', maxWidth: '64px', overflow: 'hidden', textOverflow: 'ellipsis' }">
-                  {{ person.name }}
-                </span>
+            <!-- Chevron: three months (plain box for now) -->
+            <div class="flex flex-col px-2 py-3 min-w-0"
+                 :style="{
+                   borderTop: '2px solid ' + currentAccent, borderBottom: '2px solid ' + currentAccent,
+                   borderLeft: '1.5px solid ' + accentWithOpacity(0.3),
+                 }">
+              <p class="text-[11px] font-semibold text-navy text-center mb-2 leading-snug">What can we do in the next three months?</p>
+              <ul v-if="getListData('three-months').length > 0" class="space-y-1 flex-1">
+                <li v-for="(item, idx) in getListData('three-months')" :key="idx" class="text-[11px] text-navy/80 flex items-start gap-1">
+                  <span class="w-1 h-1 rounded-full mt-1 shrink-0" :style="{ backgroundColor: currentAccent }" />
+                  <span class="break-words">{{ item }}</span>
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-[11px] text-center">Not filled in</p>
+            </div>
+
+            <!-- Goals pill -->
+            <div class="flex flex-col items-center px-2 min-w-0">
+              <div class="flex-1 w-full flex flex-col items-center px-2 py-4 min-w-0" style="border-radius: 9999px;"
+                   :style="{ border: '2px solid ' + currentAccent }">
+                <span class="font-semibold text-xs mb-1" :style="{ color: currentAccent }">Goals</span>
+                <ul v-if="getListData('goals').length > 0" class="space-y-1">
+                  <li v-for="(item, idx) in getListData('goals')" :key="idx" class="text-[11px] text-navy/80 text-center break-words">{{ item }}</li>
+                </ul>
+                <p v-else class="text-navy/20 italic text-[11px]">Not filled in</p>
               </div>
-            </template>
+            </div>
+
+            <!-- Dream pill -->
+            <div class="flex flex-col items-center px-2 min-w-0">
+              <div class="flex-1 w-full flex flex-col items-center justify-center px-2 py-4 min-w-0" style="border-radius: 9999px;"
+                   :style="{ border: '2px solid ' + currentAccent }">
+                <span class="font-semibold text-xs mb-1 flex items-center gap-1" :style="{ color: currentAccent }">
+                  Dream
+                  <span :style="{ color: currentAccent }">&#9733;</span>
+                </span>
+                <p class="text-[11px] text-navy/80 text-center whitespace-pre-line break-words">{{ getTextData('dream') || 'Not filled in' }}</p>
+              </div>
+            </div>
 
           </div>
         </div>

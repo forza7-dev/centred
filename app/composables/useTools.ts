@@ -134,6 +134,7 @@ const microTools: ToolDefinition[] = [
         title: 'Who is this about?',
         fields: [
           { id: 'name', label: 'Name', type: 'text', placeholder: 'Enter your name' },
+          { id: 'me-photo', label: 'My photo', type: 'photo', hint: 'Optional. Shown in the centre of the diagram.', allowCamera: true },
         ],
       },
       {
@@ -141,7 +142,7 @@ const microTools: ToolDefinition[] = [
         title: 'Closest to me',
         description: 'The people you are closest to. Family, best friends, partners.',
         fields: [
-          { id: 'closest', label: 'My closest people', type: 'list', placeholder: 'e.g. Mum, partner, best friend Sarah' },
+          { id: 'closest', label: 'My closest people', type: 'list-with-photo', placeholder: 'e.g. Mum, partner, best friend Sarah' },
         ],
       },
       {
@@ -149,15 +150,15 @@ const microTools: ToolDefinition[] = [
         title: 'Important to me',
         description: 'People who matter, but not quite as close. Good friends, extended family.',
         fields: [
-          { id: 'important', label: 'Important people', type: 'list', placeholder: 'e.g. Cousin James, neighbour Pat' },
+          { id: 'important', label: 'Important people', type: 'list-with-photo', placeholder: 'e.g. Cousin James, neighbour Pat' },
         ],
       },
       {
         id: 'wider',
-        title: 'Wider circle',
+        title: 'Other people in my life',
         description: 'People you know and interact with. Colleagues, acquaintances, support workers.',
         fields: [
-          { id: 'wider', label: 'Wider connections', type: 'list', placeholder: 'e.g. GP, support worker Mark, colleagues' },
+          { id: 'wider', label: 'Other people in my life', type: 'list-with-photo', placeholder: 'e.g. GP, support worker Mark, colleagues' },
         ],
       },
       {
@@ -165,7 +166,7 @@ const microTools: ToolDefinition[] = [
         title: 'Paid support',
         description: 'Professionals and paid staff who support you.',
         fields: [
-          { id: 'paid', label: 'Paid support', type: 'list', placeholder: 'e.g. Care coordinator, key worker' },
+          { id: 'paid', label: 'Paid support', type: 'list-with-photo', placeholder: 'e.g. Care coordinator, key worker' },
         ],
       },
     ],
@@ -379,8 +380,93 @@ const microTools: ToolDefinition[] = [
   },
 ]
 
+const macroTools: ToolDefinition[] = [
+  {
+    id: 'my-direction',
+    name: 'My Direction',
+    category: 'macro',
+    tagline: 'Plan your direction for the future',
+    description: 'Set out your dream, your goals, and the concrete steps to get there.',
+    icon: 'arrow-forward',
+    colour: 'teal',
+    steps: [
+      {
+        id: 'person',
+        title: 'Who is this about?',
+        fields: [
+          { id: 'name', label: 'Name', type: 'text', placeholder: 'Enter your name' },
+        ],
+      },
+      {
+        id: 'dream',
+        title: 'What is my dream?',
+        description: 'Think big. If anything were possible, what would your future look like?',
+        fields: [
+          { id: 'dream', label: 'Dream', type: 'textarea', placeholder: 'Describe your dream for the future' },
+        ],
+      },
+      {
+        id: 'goals',
+        title: 'What are my goals?',
+        description: 'What goals will help you move towards your dream?',
+        fields: [
+          { id: 'goals', label: 'Goals', type: 'list', placeholder: 'e.g. Learn to cook, find a part-time job' },
+        ],
+      },
+      {
+        id: 'now',
+        title: 'What are things like now?',
+        description: 'Describe your life as it is today.',
+        fields: [
+          { id: 'now', label: 'Things now', type: 'list', placeholder: 'e.g. Living with my parents, working part-time' },
+        ],
+      },
+      {
+        id: 'who',
+        title: 'Who are the people and services in my life?',
+        description: 'Family, friends, and professional support around you.',
+        fields: [
+          { id: 'who', label: 'People and services', type: 'list', placeholder: 'e.g. Mum, GP, support worker' },
+        ],
+      },
+      {
+        id: 'working',
+        title: 'What\'s working and not working?',
+        description: 'Look at things from different angles to agree what needs to happen.',
+        fields: [
+          { id: 'working', label: 'Working and not working', type: 'list', placeholder: 'e.g. My routine works well, but transport is a struggle' },
+        ],
+      },
+      {
+        id: 'three-months',
+        title: 'What can we do in the next three months?',
+        description: 'Medium-term actions that build towards your goals.',
+        fields: [
+          { id: 'three-months', label: 'Next three months', type: 'list', placeholder: 'e.g. Visit two colleges, join a local club' },
+        ],
+      },
+      {
+        id: 'next-month',
+        title: 'What can we do in the next month?',
+        description: 'Nearer-term actions to keep momentum going.',
+        fields: [
+          { id: 'next-month', label: 'Next month', type: 'list', placeholder: 'e.g. Book a taster session, ask for a reference' },
+        ],
+      },
+      {
+        id: 'first-steps',
+        title: 'What should we do first?',
+        description: 'The very first, concrete steps to get started.',
+        fields: [
+          { id: 'first-steps', label: 'First steps', type: 'list', placeholder: 'e.g. Call to book an appointment' },
+        ],
+      },
+    ],
+  },
+]
+
 export function useTools() {
-  const tools = microTools
+  const tools = [...microTools, ...macroTools]
 
   function getToolById(id: string): ToolDefinition | undefined {
     return tools.find(t => t.id === id)
