@@ -1,75 +1,49 @@
-# Nuxt Minimal Starter
+# CENTRED
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Interactive web app for completing Person-Centred Planning tools. Users pick a tool, fill it in step by step, and get a polished generated document they can edit, export as a PDF, or share.
 
-## Setup
+Built by Forza7 (Noe Giacari, David Coldeira).
 
-Make sure to install dependencies:
+## GitHub
+
+Repo: [`forza7-dev/centred`](https://github.com/forza7-dev/centred) (public)
+
+There is no hosted/live version. This app is not deployed anywhere (previously on Vercel, now removed). To see it running, clone the repo and run it locally — see below.
+
+## Running locally
+
+Requires Node.js (v24 recommended).
 
 ```bash
-# npm
+git clone https://github.com/forza7-dev/centred.git
+cd centred
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Then open the URL printed in the terminal (defaults to `http://localhost:3000`).
 
-Build the application for production:
+## Stack
 
-```bash
-# npm
-npm run build
+- Nuxt 4 + TypeScript + Tailwind CSS
+- Client-only app (`ssr: false`) — no server rendering
+- PDF export: html2pdf.js
+- Voice input: Web Speech API (Chrome/Edge/Safari only, hidden in Firefox)
 
-# pnpm
-pnpm build
+## Data & privacy
 
-# yarn
-yarn build
+Fully ephemeral by design: there is no backend and no localStorage. All entry data lives only in memory for the current session. Closing the tab, refreshing, or navigating away loses any unsaved entry. After a PDF export, the entry is automatically cleared.
 
-# bun
-bun run build
-```
+## Tools
 
-Locally preview production build:
+**Micro-tools:** About Me, What Matters & What Helps, My People, My Best Day / My Worst Day, What's Working, How I Communicate, My Perfect Week
 
-```bash
-# npm
-npm run preview
+**Macro-tools:** My Direction (PATH-style), My Story (MAPS-style)
 
-# pnpm
-pnpm preview
+More macro-tools planned: How I Live (Essential Lifestyle Planning), My Next Chapter (Personal Futures Planning).
 
-# yarn
-yarn preview
+## Design
 
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- Palette: Teal `#72B9CF`, Coral `#CF8872`, Navy dark `#161F38`, Sand `#FAF6F0`
+- Fonts: DM Sans (body), Marcellus (headings), Caveat (handwritten option)
+- European English throughout, no em dashes in copy
