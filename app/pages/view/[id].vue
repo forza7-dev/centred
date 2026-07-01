@@ -51,6 +51,7 @@ const isWhatsWorking = computed(() => tool.value?.id === 'whats-working')
 const isHowICommunicate = computed(() => tool.value?.id === 'how-i-communicate')
 const isMyPerfectWeek = computed(() => tool.value?.id === 'my-perfect-week')
 const isMyDirection = computed(() => tool.value?.id === 'my-direction')
+const isMyStory = computed(() => tool.value?.id === 'my-story')
 
 const myPeopleQuadrants = [
   { fieldId: 'closest', label: 'Closest to me', colour: '#CF8872' },
@@ -65,6 +66,14 @@ const myDirectionColumns = [
   { fieldId: 'working', question: 'What\'s working and not working?' },
   { fieldId: 'first-steps', question: 'What should we do first?' },
   { fieldId: 'next-month', question: 'What can we do in the next month?' },
+]
+
+const myStoryQuadrants = [
+  { fieldId: 'dreams', label: 'My Dreams', colour: '#8B7EC4', type: 'text' },
+  { fieldId: 'nightmares', label: 'My Nightmares', colour: '#6B9E7D', type: 'text' },
+  { fieldId: 'about', label: 'About Me', colour: '#72B9CF', type: 'list' },
+  { fieldId: 'gifts', label: 'My Gifts', colour: '#C1666B', type: 'list' },
+  { fieldId: 'support', label: 'To Support Me', colour: '#C97B96', type: 'list' },
 ]
 
 onMounted(() => {
@@ -138,7 +147,7 @@ async function exportPdf() {
       filename: `${tool.value.name} - ${name}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: (isMyPeople.value || isHowICommunicate.value || isMyPerfectWeek.value || isMyDirection.value) ? 'landscape' : 'portrait' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: (isMyPeople.value || isHowICommunicate.value || isMyPerfectWeek.value || isMyDirection.value || isMyStory.value) ? 'landscape' : 'portrait' },
     })
     deleteEntry(entryId)
     showGdprNotice.value = true
@@ -160,7 +169,7 @@ function goBack() {
 </script>
 
 <template>
-  <div class="mx-auto px-4 sm:px-6 py-8 sm:py-12" :class="isMyDirection ? 'max-w-6xl' : 'max-w-3xl'">
+  <div class="mx-auto px-4 sm:px-6 py-8 sm:py-12" :class="(isMyDirection || isMyStory) ? 'max-w-6xl' : 'max-w-3xl'">
     <!-- GDPR notice after PDF export -->
     <div v-if="showGdprNotice" class="text-center py-16">
       <div class="w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-6">
@@ -454,6 +463,92 @@ function goBack() {
                 </span>
                 <p class="text-[11px] text-navy/80 text-center whitespace-pre-line break-words">{{ getTextData('dream') || 'Not filled in' }}</p>
               </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==================== MY STORY: Vertical story box + 3 columns of two ==================== -->
+        <div v-else-if="isMyStory" class="px-4 sm:px-6 py-6">
+          <div class="grid gap-3" style="grid-template-columns: 0.8fr repeat(3, minmax(0, 1fr)); grid-template-rows: 1fr 1fr; min-height: 460px;">
+
+            <!-- My Story: vertical box spanning both rows -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 1; grid-row: 1 / span 2; border: 2px solid #CF8872; background-color: rgba(207,136,114,0.06);">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" style="color: #CF8872;">My Story</h3>
+              <ul v-if="getListData('story').length > 0" class="space-y-1.5">
+                <li v-for="(item, i) in getListData('story')" :key="i" class="flex items-start gap-2 text-navy/80 text-sm">
+                  <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background-color: #CF8872;" />
+                  {{ item }}
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
+            </div>
+
+            <!-- My Dreams -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 2; grid-row: 1;"
+                 :style="{ border: '2px solid ' + myStoryQuadrants[0].colour, backgroundColor: myStoryQuadrants[0].colour + '0F' }">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" :style="{ color: myStoryQuadrants[0].colour }">{{ myStoryQuadrants[0].label }}</h3>
+              <p v-if="getTextData('dreams')" class="text-sm text-navy/80 whitespace-pre-line">{{ getTextData('dreams') }}</p>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
+            </div>
+
+            <!-- My Nightmares -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 2; grid-row: 2;"
+                 :style="{ border: '2px solid ' + myStoryQuadrants[1].colour, backgroundColor: myStoryQuadrants[1].colour + '0F' }">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" :style="{ color: myStoryQuadrants[1].colour }">{{ myStoryQuadrants[1].label }}</h3>
+              <p v-if="getTextData('nightmares')" class="text-sm text-navy/80 whitespace-pre-line">{{ getTextData('nightmares') }}</p>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
+            </div>
+
+            <!-- About Me -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 3; grid-row: 1;"
+                 :style="{ border: '2px solid ' + myStoryQuadrants[2].colour, backgroundColor: myStoryQuadrants[2].colour + '0F' }">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" :style="{ color: myStoryQuadrants[2].colour }">{{ myStoryQuadrants[2].label }}</h3>
+              <ul v-if="getListData('about').length > 0" class="space-y-1.5">
+                <li v-for="(item, i) in getListData('about')" :key="i" class="flex items-start gap-2 text-navy/80 text-sm">
+                  <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" :style="{ backgroundColor: myStoryQuadrants[2].colour }" />
+                  {{ item }}
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
+            </div>
+
+            <!-- My Gifts -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 3; grid-row: 2;"
+                 :style="{ border: '2px solid ' + myStoryQuadrants[3].colour, backgroundColor: myStoryQuadrants[3].colour + '0F' }">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" :style="{ color: myStoryQuadrants[3].colour }">{{ myStoryQuadrants[3].label }}</h3>
+              <ul v-if="getListData('gifts').length > 0" class="space-y-1.5">
+                <li v-for="(item, i) in getListData('gifts')" :key="i" class="flex items-start gap-2 text-navy/80 text-sm">
+                  <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" :style="{ backgroundColor: myStoryQuadrants[3].colour }" />
+                  {{ item }}
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
+            </div>
+
+            <!-- To Support Me -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 4; grid-row: 1;"
+                 :style="{ border: '2px solid ' + myStoryQuadrants[4].colour, backgroundColor: myStoryQuadrants[4].colour + '0F' }">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" :style="{ color: myStoryQuadrants[4].colour }">{{ myStoryQuadrants[4].label }}</h3>
+              <ul v-if="getListData('support').length > 0" class="space-y-1.5">
+                <li v-for="(item, i) in getListData('support')" :key="i" class="flex items-start gap-2 text-navy/80 text-sm">
+                  <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" :style="{ backgroundColor: myStoryQuadrants[4].colour }" />
+                  {{ item }}
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
+            </div>
+
+            <!-- Action Plan -->
+            <div class="rounded-xl p-4 min-w-0" style="grid-column: 4; grid-row: 2; border: 2px solid #161F38; background-color: rgba(22,31,56,0.04);">
+              <h3 class="font-semibold text-xs uppercase tracking-wider mb-3" style="color: #161F38;">Action Plan</h3>
+              <ul v-if="getListData('action-plan').length > 0" class="space-y-1.5">
+                <li v-for="(item, i) in getListData('action-plan')" :key="i" class="flex items-start gap-2 text-navy/80 text-sm">
+                  <span class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background-color: #161F38;" />
+                  {{ item }}
+                </li>
+              </ul>
+              <p v-else class="text-navy/20 italic text-sm">Not filled in</p>
             </div>
 
           </div>

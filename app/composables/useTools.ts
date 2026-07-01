@@ -463,6 +463,80 @@ const macroTools: ToolDefinition[] = [
       },
     ],
   },
+  {
+    id: 'my-story',
+    name: 'My Story',
+    category: 'macro',
+    tagline: 'Tell your story and plan for the future',
+    description: 'Share your story, your dreams and fears, and build an action plan together.',
+    icon: 'map',
+    colour: 'teal',
+    steps: [
+      {
+        id: 'person',
+        title: 'Who is this about?',
+        fields: [
+          { id: 'name', label: 'Name', type: 'text', placeholder: 'Enter your name' },
+        ],
+      },
+      {
+        id: 'story',
+        title: 'What is my story?',
+        description: 'The story of your life so far, in your own words.',
+        fields: [
+          { id: 'story', label: 'My story', type: 'list', placeholder: 'e.g. Born in Leeds, moved to Bristol aged 10' },
+        ],
+      },
+      {
+        id: 'dreams',
+        title: 'What are my dreams and ambitions?',
+        description: 'Think big about the future you want.',
+        fields: [
+          { id: 'dreams', label: 'My dreams', type: 'textarea', placeholder: 'Describe your dreams and ambitions' },
+        ],
+      },
+      {
+        id: 'nightmares',
+        title: 'What are my fears and nightmares?',
+        description: 'What worries you, or what you want to avoid in the future.',
+        fields: [
+          { id: 'nightmares', label: 'My nightmares', type: 'textarea', placeholder: 'Describe your fears and nightmares' },
+        ],
+      },
+      {
+        id: 'about-me',
+        title: 'Who is the person?',
+        description: 'Personality, interests, and what makes you, you.',
+        fields: [
+          { id: 'about', label: 'About me', type: 'list', placeholder: 'e.g. Friendly, loves music, always up for an adventure' },
+        ],
+      },
+      {
+        id: 'gifts',
+        title: 'What are my gifts and talents?',
+        description: 'What you are good at.',
+        fields: [
+          { id: 'gifts', label: 'My gifts', type: 'list', placeholder: 'e.g. Great listener, good with animals' },
+        ],
+      },
+      {
+        id: 'support',
+        title: 'What are my support needs?',
+        description: 'What helps you, and what you need from others.',
+        fields: [
+          { id: 'support', label: 'To support me', type: 'list', placeholder: 'e.g. Extra time to process information, clear routines' },
+        ],
+      },
+      {
+        id: 'action-plan',
+        title: 'Action plan',
+        description: 'What steps will we take to move forward?',
+        fields: [
+          { id: 'action-plan', label: 'Action plan', type: 'list', placeholder: 'e.g. Arrange a visit to the day centre next month' },
+        ],
+      },
+    ],
+  },
 ]
 
 export function useTools() {
