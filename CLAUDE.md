@@ -52,9 +52,10 @@ theme-driven styling, pinned pubspec versions, tests per screen/provider).
 Full implementation plan: `~/.claude/plans/lovely-nibbling-map.md`.
 
 ## Key design decisions
-- Each tool is a reusable template (not single-use). Users create multiple
-  entries per tool.
-- No "Completed" status. Dashboard shows saved entries by name and date.
+- Each tool is a reusable template (not single-use), but the dashboard has
+  no saved-entries list — "Start new" always creates a fresh entry and
+  pushes straight into the fill wizard for it. There is no way to resume a
+  browsed, not-yet-generated entry from the dashboard.
 - Final step button says "Generate", not "Finish".
 - Routes key off `entryId` only (`/fill/:entryId`, `/view/:entryId`);
   `toolId` is resolved from the entry, never duplicated in the URL.

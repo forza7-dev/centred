@@ -1,0 +1,48 @@
+name: centred
+description: "Person-centred planning, one tool at a time."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Core
+  flutter_riverpod: ^2.6.1
+  cupertino_icons: ^1.0.8
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Photo & voice input
+  image_picker: ^1.2.2
+  speech_to_text: ^7.4.0
+
+  # PDF export
+  pdf: ^3.12.0
+  printing: ^5.14.3
+
+  # App icon
+  flutter_launcher_icons: ^0.14.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/assets/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/assets/centred-appicon-1024-square.png"
+  remove_alpha_ios: true
