@@ -1,4 +1,7 @@
-# CENTRED
+# CENTRED — design reference (Nuxt prototype)
+
+> This is Noe's original Nuxt/Vue prototype, kept as a frozen UX/content
+> reference. The real product is the Flutter app at the repo root.
 
 Interactive web app for completing Person-Centred Planning tools. Users pick a tool, fill it in step by step, and get a polished generated document they can edit, export as a PDF, or share.
 
@@ -16,7 +19,7 @@ Requires Node.js (v24 recommended).
 
 ```bash
 git clone https://github.com/forza7-dev/centred.git
-cd centred
+cd centred/design-reference
 npm install
 npm run dev
 ```
